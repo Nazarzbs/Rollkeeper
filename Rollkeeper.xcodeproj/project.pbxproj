@@ -14,7 +14,6 @@
 		7848F0582C95DA4F0076C471 /* DiceSide.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7848F0522C95DA4F0076C471 /* DiceSide.swift */; };
 		7848F0592C95DA4F0076C471 /* DiceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7848F0542C95DA4F0076C471 /* DiceView.swift */; };
 		7848F05A2C95DA4F0076C471 /* DiceSideView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7848F0552C95DA4F0076C471 /* DiceSideView.swift */; };
-		7848F05C2C95DB1C0076C471 /* ViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7848F05B2C95DB1C0076C471 /* ViewModel.swift */; };
 		7848F05E2C95DB280076C471 /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7848F05D2C95DB280076C471 /* User.swift */; };
 /* End PBXBuildFile section */
 
@@ -28,7 +27,6 @@
 		7848F0522C95DA4F0076C471 /* DiceSide.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiceSide.swift; sourceTree = "<group>"; };
 		7848F0542C95DA4F0076C471 /* DiceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiceView.swift; sourceTree = "<group>"; };
 		7848F0552C95DA4F0076C471 /* DiceSideView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiceSideView.swift; sourceTree = "<group>"; };
-		7848F05B2C95DB1C0076C471 /* ViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewModel.swift; sourceTree = "<group>"; };
 		7848F05D2C95DB280076C471 /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -64,7 +62,6 @@
 			children = (
 				7848F0412C94BC920076C471 /* RollkeeperApp.swift */,
 				7848F0432C94BC920076C471 /* ContentView.swift */,
-				7848F05B2C95DB1C0076C471 /* ViewModel.swift */,
 				7848F05D2C95DB280076C471 /* User.swift */,
 				7848F0522C95DA4F0076C471 /* DiceSide.swift */,
 				7848F0542C95DA4F0076C471 /* DiceView.swift */,
@@ -158,7 +155,6 @@
 				7848F0592C95DA4F0076C471 /* DiceView.swift in Sources */,
 				7848F05A2C95DA4F0076C471 /* DiceSideView.swift in Sources */,
 				7848F0442C94BC920076C471 /* ContentView.swift in Sources */,
-				7848F05C2C95DB1C0076C471 /* ViewModel.swift in Sources */,
 				7848F0422C94BC920076C471 /* RollkeeperApp.swift in Sources */,
 				7848F05E2C95DB280076C471 /* User.swift in Sources */,
 			);

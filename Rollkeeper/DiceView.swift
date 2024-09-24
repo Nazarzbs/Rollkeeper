@@ -12,11 +12,13 @@ struct DiceView: View {
     let size: Double
     @Binding var roll: Bool
     @Binding var result: Int
+    @Binding var disableDice: Bool
     
     @State private var engine: CHHapticEngine?
     
     @State private var horizontalPattern: [Int]
     @State private var verticalPattern: [Int]
+//    @State private var disableDice: Bool = false
     
     @State var dice: [DiceSide]
     
@@ -26,22 +28,35 @@ struct DiceView: View {
         ZStack {
             ForEach(dice, id: \.number) {
                 DiceSideView(side: $0, size: size)
+                    
             }
         }
         .frame(width: size, height: size)
         .onChange(of: roll) {
             if roll {
+                disableDice = true
                 rotateRandom()
-                roll = false
+//                roll = false
+                DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
+                    disableDice = false
+                    roll = false
+                }
             }
         }
         .onAppear(perform: prepareHaptics)
+        .onTapGesture {
+            if !disableDice {
+                roll = true
+                disableDice = true
+            }
+        }
     }
     
-    init(size: Double, roll: Binding<Bool>, result: Binding<Int>) {
+    init(size: Double, roll: Binding<Bool>, result: Binding<Int>, disableDice: Binding<Bool>) {
         self.size = size
         self._roll = roll
         self._result = result
+        self._disableDice = disableDice
         
         var horPattern = [6, 5, 1, 2]
         var verPattern = [6, 4, 1, 3]
@@ -72,7 +87,7 @@ struct DiceView: View {
 
 struct DiceView_Previews: PreviewProvider {
     static var previews: some View {
-        DiceView(size: 150, roll: .constant(false), result: .constant(4))
+        DiceView(size: 150, roll: .constant(true), result: .constant(1), disableDice: .constant(false))
             .previewLayout(.sizeThatFits)
     }
 }
@@ -89,23 +104,24 @@ extension DiceView {
     }
     
     private func rotateDice(_ facingSideIndex: Int, _ nextSideIndex: Int) {
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
-            rollHaptic()
-            withAnimation(.easeInOut(duration: 0.4)) {
-                self.dice[facingSideIndex].degrees += 90
-                self.dice[facingSideIndex].offset -= self.size
-                
-                self.dice[nextSideIndex].degrees += 90
-                self.dice[nextSideIndex].offset -= self.size
-            }
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-                if self.rollCount > 0 {
-                    self.rollCount -= 1
-                    self.rotateRandom()
-                } else {
-                    self.result = self.dice[nextSideIndex].number
-                    self.rollCount = 5
-                }
+        // Trigger haptic and start the animation
+        rollHaptic()
+        disableDice = false
+        withAnimation(.linear(duration: 0.3)) {
+            self.dice[facingSideIndex].degrees += 90
+            self.dice[facingSideIndex].offset -= self.size
+            
+            self.dice[nextSideIndex].degrees += 90
+            self.dice[nextSideIndex].offset -= self.size
+        }
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) { // Wait for animation to complete
+            if self.rollCount > 0 {
+                self.rollCount -= 1
+                self.rotateRandom() // Continue rotating dice
+            } else {
+                self.result = self.dice[nextSideIndex].number
+                self.rollCount = 5 // Reset for next full roll series
             }
         }
     }
@@ -215,7 +231,7 @@ extension DiceView {
         
         var events = [CHHapticEvent]()
         
-        for i in stride(from: 0, through: 0.2, by: 0.1) {
+        for i in stride(from: 0, through: 0.2, by: 0.2) {
             let intensity = CHHapticEventParameter(parameterID: .hapticIntensity, value: Float(i * 2.5) + 0.1)
             let sharpness = CHHapticEventParameter(parameterID: .hapticSharpness, value: Float(i * 2.5) + 0.1)
             let event = CHHapticEvent(eventType: .hapticTransient, parameters: [intensity, sharpness], relativeTime: i)
