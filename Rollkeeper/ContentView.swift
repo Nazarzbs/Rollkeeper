@@ -51,9 +51,9 @@ struct ContentView: View {
                     Spacer()
                     
                     dice
+                    
                     HStack {
                         Button {
-                            
                             withAnimation() {
                                 buttonTapped()
                             }
@@ -100,7 +100,7 @@ struct ContentView: View {
                         Button {
                             
                             withAnimation() {
-                              
+                                
                             }
                         } label: {
                             ZStack {
@@ -140,51 +140,65 @@ struct ContentView: View {
                             }
                         }
                         .frame(maxWidth: .infinity)
-                        .disabled(disableButton)
+                        
                     }
                     .padding(.horizontal)
                     .padding(.bottom, 40)
                 }
                 .onChange(of: result1) {
-                    total = result1 + result2 + result3 + result4 + result5 + result6
-                    if total != 0 {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
+                        total = result1 + result2 + result3 + result4 + result5 + result6
                         
-                        disableButton = false
+                        if total != 0 {
+                            
+                            disableButton = false
+                            
+                        }
                     }
                 }
                 .onChange(of: result2) {
-                    total = result1 + result2 + result3 + result4 + result5 + result6
-                    if total != 0 {
-                        
-                        disableButton = false
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
+                        total = result1 + result2 + result3 + result4 + result5 + result6
+                        if total != 0 {
+                            
+                            disableButton = false
+                        }
                     }
                 }
                 .onChange(of: result3) {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
+                        total = result1 + result2 + result3 + result4 + result5 + result6
+                        if total != 0 {
+                            
+                            disableButton = false
+                        }
+                    }
+                }
+                .onChange(of: result4) { DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
                     total = result1 + result2 + result3 + result4 + result5 + result6
                     if total != 0 {
                         
                         disableButton = false
                     }
                 }
-                .onChange(of: result4) {
-                    total = result1 + result2 + result3 + result4 + result5 + result6
-                    if total != 0 {
-                        
-                        disableButton = false
-                    }
+                    
                 }
                 .onChange(of: result5) {
-                    total = result1 + result2 + result3 + result4 + result5 + result6
-                    if total != 0 {
-                        
-                        disableButton = false
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
+                        total = result1 + result2 + result3 + result4 + result5 + result6
+                        if total != 0 {
+                            
+                            disableButton = false
+                        }
                     }
                 }
                 .onChange(of: result6) {
-                    total = result1 + result2 + result3 + result4 + result5 + result6
-                    if total != 0 {
-                        
-                        disableButton = false
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
+                        total = result1 + result2 + result3 + result4 + result5 + result6
+                        if total != 0 {
+                            
+                            disableButton = false
+                        }
                     }
                 }
                 .padding(.bottom)
@@ -199,7 +213,7 @@ struct ContentView: View {
                                 withAnimation(.bouncy) {
                                     
                                     numberOfDiceSelected = number
-                                    result1 = 0                                    
+                                    result1 = 0
                                     result2 = 0
                                     result3 = 0
                                     result4 = 0
@@ -291,6 +305,7 @@ struct ContentView: View {
 
 extension ContentView {
     private func buttonTapped() {
+        disableButton = true
         roll1 = true
         roll2 = numberOfDiceSelected > 1 ? true : false
         roll3 = numberOfDiceSelected > 2 ? true : false
@@ -303,8 +318,6 @@ extension ContentView {
         result4 = 0
         result5 = 0
         result6 = 0
-        total = 0
-        disableButton = true
     }
 }
 

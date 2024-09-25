@@ -18,7 +18,6 @@ struct DiceView: View {
     
     @State private var horizontalPattern: [Int]
     @State private var verticalPattern: [Int]
-//    @State private var disableDice: Bool = false
     
     @State var dice: [DiceSide]
     
@@ -28,28 +27,24 @@ struct DiceView: View {
         ZStack {
             ForEach(dice, id: \.number) {
                 DiceSideView(side: $0, size: size)
-                    
+                
             }
         }
         .frame(width: size, height: size)
         .onChange(of: roll) {
             if roll {
-                disableDice = true
+                print("Roll")
                 rotateRandom()
-//                roll = false
-                DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
-                    disableDice = false
-                    roll = false
-                }
+                //                disableDice = true
             }
         }
         .onAppear(perform: prepareHaptics)
-        .onTapGesture {
-            if !disableDice {
-                roll = true
-                disableDice = true
-            }
-        }
+        //        .onTapGesture {
+        //            if !disableDice {
+        //                roll = true
+        //                disableDice = true
+        //            }
+        //        }
     }
     
     init(size: Double, roll: Binding<Bool>, result: Binding<Int>, disableDice: Binding<Bool>) {
@@ -70,6 +65,7 @@ struct DiceView: View {
         
         var allSides = [DiceSide]()
         
+        // Create the dice sides
         (1...6).forEach { number in
             let side = DiceSide(number: number, degrees: -90, offset: size, anchor: .leading, rotateHorizontally: true)
             allSides.append(side)
@@ -77,6 +73,7 @@ struct DiceView: View {
         if let facingSideIndex = allSides.firstIndex(where: { $0.number == horPattern[0] }) {
             allSides[facingSideIndex].degrees = 0
             allSides[facingSideIndex].offset = 0
+            
         }
         
         _horizontalPattern = State(wrappedValue: horPattern)
@@ -87,7 +84,7 @@ struct DiceView: View {
 
 struct DiceView_Previews: PreviewProvider {
     static var previews: some View {
-        DiceView(size: 150, roll: .constant(true), result: .constant(1), disableDice: .constant(false))
+        DiceView(size: 150, roll: .constant(false), result: .constant(1), disableDice: .constant(false))
             .previewLayout(.sizeThatFits)
     }
 }
@@ -106,7 +103,6 @@ extension DiceView {
     private func rotateDice(_ facingSideIndex: Int, _ nextSideIndex: Int) {
         // Trigger haptic and start the animation
         rollHaptic()
-        disableDice = false
         withAnimation(.linear(duration: 0.3)) {
             self.dice[facingSideIndex].degrees += 90
             self.dice[facingSideIndex].offset -= self.size
@@ -115,14 +111,20 @@ extension DiceView {
             self.dice[nextSideIndex].offset -= self.size
         }
         
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) { // Wait for animation to complete
-            if self.rollCount > 0 {
+        // Wait for animation to complete
+        if self.rollCount > 0 {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
                 self.rollCount -= 1
                 self.rotateRandom() // Continue rotating dice
-            } else {
-                self.result = self.dice[nextSideIndex].number
-                self.rollCount = 5 // Reset for next full roll series
             }
+        } else {
+            self.result = self.dice[nextSideIndex].number
+            self.rollCount = 5 // Reset for next full roll series
+            //                disableDice = false
+            
+            self.roll = false
+            print("Stoped Rolling")
+            
         }
     }
     
