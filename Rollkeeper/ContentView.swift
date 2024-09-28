@@ -28,10 +28,10 @@ struct ContentView: View {
     
     @State var disableDice = false
     
-    @State private var diceValue = 1
     @State var isAnimating = false
     
-    @State private var results: [Int] = []
+    @State private var results: [RollResult] = []
+    @State private var showResultsView = false
     
     var body: some View {
         NavigationStack {
@@ -53,97 +53,28 @@ struct ContentView: View {
                     dice
                     
                     HStack {
-                        Button {
-                            withAnimation() {
+                        Button(action: {
+                            withAnimation {
                                 buttonTapped()
                             }
-                        } label: {
-                            ZStack {
-                                RoundedRectangle(cornerRadius: 30, style: .continuous)
-                                    .fill(
-                                        RadialGradient(
-                                            gradient: Gradient(colors: [
-                                                Color.white.opacity(0.95),   // Central glossy highlight
-                                                Color(#colorLiteral(red: 0.9, green: 0.9, blue: 0.95, alpha: 1)),   // Soft outer pearly color
-                                                Color(#colorLiteral(red: 0.75, green: 0.75, blue: 0.85, alpha: 1))  // Slight darker edge
-                                            ]),
-                                            center: .center,
-                                            startRadius: 10,
-                                            endRadius: 120
-                                        )
-                                    )
-                                    .overlay(
-                                        RoundedRectangle(cornerRadius: 30, style: .continuous)
-                                            .stroke(
-                                                LinearGradient(
-                                                    gradient: Gradient(colors: [Color.white.opacity(0.8), Color.white.opacity(0.2)]),
-                                                    startPoint: .topLeading,
-                                                    endPoint: .bottomTrailing
-                                                ),
-                                                lineWidth: 3
-                                            )
-                                    )
-                                    .frame(width: 120, height: 80)
-                                    .shadow(color: Color.black.opacity(0.2), radius: 10, x: 5, y: 5)  // Soft shadow for depth
-                                    .shadow(color: Color.white.opacity(0.5), radius: 10, x: -5, y: -5)  // Light highlight shadow for more 3D effect
-                                
-                                Text("ROLL")
-                                    .foregroundColor(.gray.opacity(0.8))
-                                    .font(.system(size: 24))
-                                    .bold()
-                                    .shadow(color: .black.opacity(0.3), radius: 2, x: 1, y: 1)  // Slight shadow for text to stand out
-                            }
+                        }) {
+                            buttonDesign(text: "ROLL")
                         }
                         .disabled(disableButton)
                         .frame(maxWidth: .infinity)
                         
-                        Button {
-                            
-                            withAnimation() {
-                                
-                            }
-                        } label: {
-                            ZStack {
-                                RoundedRectangle(cornerRadius: 30, style: .continuous)
-                                    .fill(
-                                        RadialGradient(
-                                            gradient: Gradient(colors: [
-                                                Color.white.opacity(0.95),   // Central glossy highlight
-                                                Color(#colorLiteral(red: 0.9, green: 0.9, blue: 0.95, alpha: 1)),   // Soft outer pearly color
-                                                Color(#colorLiteral(red: 0.75, green: 0.75, blue: 0.85, alpha: 1))  // Slight darker edge
-                                            ]),
-                                            center: .center,
-                                            startRadius: 10,
-                                            endRadius: 120
-                                        )
-                                    )
-                                    .overlay(
-                                        RoundedRectangle(cornerRadius: 30, style: .continuous)
-                                            .stroke(
-                                                LinearGradient(
-                                                    gradient: Gradient(colors: [Color.white.opacity(0.8), Color.white.opacity(0.2)]),
-                                                    startPoint: .topLeading,
-                                                    endPoint: .bottomTrailing
-                                                ),
-                                                lineWidth: 3
-                                            )
-                                    )
-                                    .frame(width: 120, height: 80)
-                                    .shadow(color: Color.black.opacity(0.2), radius: 10, x: 5, y: 5)  // Soft shadow for depth
-                                    .shadow(color: Color.white.opacity(0.5), radius: 10, x: -5, y: -5)  // Light highlight shadow for more 3D effect
-                                
-                                Text("Results")
-                                    .foregroundColor(.gray.opacity(0.8))
-                                    .font(.system(size: 24))
-                                    .bold()
-                                    .shadow(color: .black.opacity(0.3), radius: 2, x: 1, y: 1)  // Slight shadow for text to stand out
-                            }
+                        NavigationLink(destination: RollHistoryView(results: results)) {
+                            buttonDesign(text: "Results")
+                                .frame(maxWidth: .infinity)
                         }
-                        .frame(maxWidth: .infinity)
-                        
                     }
                     .padding(.horizontal)
                     .padding(.bottom, 40)
+                }
+                .onChange(of: total) {
+                    if total != 0 {
+                        results.append(RollResult(id: UUID(), rollTime: Date.now, rollResult: total, diceNumber: numberOfDiceSelected))
+                    }
                 }
                 .onChange(of: result1) {
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
@@ -205,43 +136,38 @@ struct ContentView: View {
             }
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
-                    Menu {
-                        // Provide options for the number of dice
-                        ForEach(1...6, id: \.self) { number in
-                            Button(action: {
-                                disableDice = true
-                                withAnimation(.bouncy) {
-                                    
-                                    numberOfDiceSelected = number
-                                    result1 = 0
-                                    result2 = 0
-                                    result3 = 0
-                                    result4 = 0
-                                    result5 = 0
-                                    result6 = 0
-                                }
-                            }) {
-                                HStack {
-                                    Text("\(number) Dice")
-                                    
-                                    // Show a checkmark next to the currently selected number
-                                    if numberOfDiceSelected == number {
-                                        Image(systemName: "checkmark")
-                                    }
-                                }
-                            }
-                        }
-                    } label: {
-                        HStack {
-                            Text("\(numberOfDiceSelected) -")
-                            Image(systemName: "dice")
-                        }
-                        .foregroundColor(.black)  // Set the color to black
-                        .bold()
-                    }
+                    diceMenu
                 }
             }
             .navigationTitle(total > 0 ? "Total: \(total)" : "Dice Roller")
+        }
+    }
+    
+    private var diceMenu: some View {
+        Menu {
+            ForEach(1...6, id: \.self) { number in
+                Button(action: {
+                    disableDice = true
+                    withAnimation(.bouncy) {
+                        numberOfDiceSelected = number
+                        resetDiceResults()
+                    }
+                }) {
+                    HStack {
+                        Text("\(number) Dice")
+                        if numberOfDiceSelected == number {
+                            Image(systemName: "checkmark")
+                        }
+                    }
+                }
+            }
+        } label: {
+            HStack {
+                Text("\(numberOfDiceSelected) -")
+                Image(systemName: "dice")
+            }
+            .foregroundColor(.black)
+            .bold()
         }
     }
     
@@ -301,10 +227,58 @@ struct ContentView: View {
         .padding(.horizontal)
         .padding(.bottom, 40)
     }
+    
+    private func resetDiceResults() {
+        result1 = 0
+        result2 = 0
+        result3 = 0
+        result4 = 0
+        result5 = 0
+        result6 = 0
+    }
+    
+    private func buttonDesign(text: String) -> some View {
+        ZStack {
+            RoundedRectangle(cornerRadius: 30, style: .continuous)
+                .fill(
+                    RadialGradient(
+                        gradient: Gradient(colors: [
+                            Color.white.opacity(0.95),
+                            Color(#colorLiteral(red: 0.9, green: 0.9, blue: 0.95, alpha: 1)),
+                            Color(#colorLiteral(red: 0.75, green: 0.75, blue: 0.85, alpha: 1))
+                        ]),
+                        center: .center,
+                        startRadius: 10,
+                        endRadius: 120
+                    )
+                )
+                .overlay(
+                    RoundedRectangle(cornerRadius: 30, style: .continuous)
+                        .stroke(
+                            LinearGradient(
+                                gradient: Gradient(colors: [Color.white.opacity(0.8), Color.white.opacity(0.2)]),
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            ),
+                            lineWidth: 3
+                        )
+                )
+                .frame(width: 120, height: 80)
+                .shadow(color: Color.black.opacity(0.2), radius: 10, x: 5, y: 5)
+                .shadow(color: Color.white.opacity(0.5), radius: 10, x: -5, y: -5)
+            
+            Text(text)
+                .foregroundColor(.gray.opacity(0.8))
+                .font(.system(size: 24))
+                .bold()
+                .shadow(color: .black.opacity(0.3), radius: 2, x: 1, y: 1)
+        }
+    }
 }
 
 extension ContentView {
     private func buttonTapped() {
+        disableDice = true
         disableButton = true
         roll1 = true
         roll2 = numberOfDiceSelected > 1 ? true : false

@@ -33,18 +33,17 @@ struct DiceView: View {
         .frame(width: size, height: size)
         .onChange(of: roll) {
             if roll {
-                print("Roll")
                 rotateRandom()
-                //                disableDice = true
+               
             }
         }
         .onAppear(perform: prepareHaptics)
-        //        .onTapGesture {
-        //            if !disableDice {
-        //                roll = true
-        //                disableDice = true
-        //            }
-        //        }
+        .onTapGesture {
+            if !disableDice {
+                roll = true
+                disableDice = true
+            }
+        }
     }
     
     init(size: Double, roll: Binding<Bool>, result: Binding<Int>, disableDice: Binding<Bool>) {
@@ -123,8 +122,9 @@ extension DiceView {
             //                disableDice = false
             
             self.roll = false
-            print("Stoped Rolling")
-            
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
+                disableDice = false
+            }
         }
     }
     
