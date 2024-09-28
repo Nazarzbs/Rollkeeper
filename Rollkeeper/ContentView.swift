@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct ContentView: View {
     
@@ -30,8 +31,7 @@ struct ContentView: View {
     
     @State var isAnimating = false
     
-    @State private var results: [RollResult] = []
-    @State private var showResultsView = false
+    @Environment(\.modelContext) var modelContext
     
     var body: some View {
         NavigationStack {
@@ -63,7 +63,7 @@ struct ContentView: View {
                         .disabled(disableButton)
                         .frame(maxWidth: .infinity)
                         
-                        NavigationLink(destination: RollHistoryView(results: results)) {
+                        NavigationLink(destination: RollHistoryView()) {
                             buttonDesign(text: "Results")
                                 .frame(maxWidth: .infinity)
                         }
@@ -73,7 +73,7 @@ struct ContentView: View {
                 }
                 .onChange(of: total) {
                     if total != 0 {
-                        results.append(RollResult(id: UUID(), rollTime: Date.now, rollResult: total, diceNumber: numberOfDiceSelected))
+                        modelContext.insert(RollResult(id: UUID(), rollTime: Date.now, rollResult: total, diceNumber: numberOfDiceSelected))
                     }
                 }
                 .onChange(of: result1) {

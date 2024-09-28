@@ -1,14 +1,13 @@
-//
-//  RollHistoryView.swift
-//  Rollkeeper
-//
-//  Created by Nazar on 28/9/24.
-//
-
 import SwiftUI
+import SwiftData
 
 struct RollHistoryView: View {
-    @State var results: [RollResult]
+    @Query(sort: [
+        SortDescriptor(\RollResult.rollTime, order: .reverse) // Sort in reverse order
+    ]) var results: [RollResult]
+    
+    @Environment(\.modelContext) var modelContext
+    @Environment(\.dismiss) var dismiss
     
     var body: some View {
         List {
@@ -19,7 +18,7 @@ struct RollHistoryView: View {
                         .foregroundColor(.green)
                     
                     VStack(alignment: .leading) {
-                        Text("Roll \(index + 1)")
+                        Text("Roll \(results.count - index)") // Reverse the index
                             .font(.title3)
                             .foregroundColor(.primary)
                         
@@ -44,20 +43,26 @@ struct RollHistoryView: View {
                 .padding(.vertical, 10)
                 .contentShape(Rectangle())
             }
-            .onDelete(perform: deleteRow)
+            .onDelete(perform: delete)
         }
+        .navigationBarBackButtonHidden()
         .listStyle(InsetGroupedListStyle())
-        .navigationTitle("Previous Rolls")
+        .navigationTitle("Roll History")
+        .navigationBarItems(leading: Button(action: {
+            dismiss()
+        }) {
+            HStack {
+                Image(systemName: "chevron.left")
+                    .foregroundColor(.blue)
+                Text("Back")
+            }
+        })
     }
     
-    func deleteRow(at offsets: IndexSet) {
-        results.remove(atOffsets: offsets)
+    func delete(at offsets: IndexSet) {
+        for offset in offsets {
+            let result = results[offset]
+            modelContext.delete(result)
+        }
     }
-}
-#Preview {
-    RollHistoryView(results: [
-        RollResult(id: UUID(), rollTime: Date.now, rollResult: 20, diceNumber: 4),
-        RollResult(id: UUID(), rollTime: Date.now, rollResult: 16, diceNumber: 3),
-        RollResult(id: UUID(), rollTime: Date.now, rollResult: 12, diceNumber: 2)
-    ])
 }

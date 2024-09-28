@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import SwiftData
 
 @main
 struct RollkeeperApp: App {
@@ -13,5 +14,6 @@ struct RollkeeperApp: App {
         WindowGroup {
             ContentView()
         }
+        .modelContainer(for: RollResult.self)
     }
 }

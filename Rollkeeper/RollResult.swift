@@ -6,8 +6,10 @@
 //
 
 import Foundation
+import SwiftData
 
-class RollResult: Codable, Equatable {
+@Model
+class RollResult: Identifiable {
     var id: UUID
     var rollTime: Date
     var rollResult: Int
@@ -18,9 +20,5 @@ class RollResult: Codable, Equatable {
         self.rollTime = rollTime
         self.rollResult = rollResult
         self.diceNumber = diceNumber
-    }
-    
-    static func == (lhs: RollResult, rhs: RollResult) -> Bool {
-        lhs.id == rhs.id
     }
 }
